@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1 style="text-align:center; margin-top: 20px;">Your Cart</h1>
+  <div class="container" id="cart-container"></div>
+  <div style="text-align:center; margin-top: 30px;">
+    <button onclick="window.location.href='checkout.html'" class="btn-newsletter">Proceed to Checkout</button>
+  </div>
+  <script>
+    const cartContainer = document.getElementById('cart-container');
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    function renderCart() {
+      if (cart.length === 0) {
+        cartContainer.innerHTML = '<p style="text-align:center">Your cart is empty.</p>';
+        return;
+      }
+
+      let total = 0;
+      cartContainer.innerHTML = cart.map((item, index) => {
+        total += item.price * item.quantity;
+        return `
+          <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+            <h3>${item.name}</h3>
+            <p>Price: ₹${item.price}</p>
+            <p>Quantity: <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)"></p>
+            <button onclick="removeItem(${index})">Remove</button>
+          </div>
+        `;
+      }).join('') + `<h2 style="text-align:center">Total: ₹${total.toFixed(2)}</h2>`;
+    }
+
+    function updateQuantity(index, quantity) {
+      cart[index].quantity = parseInt(quantity);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>
